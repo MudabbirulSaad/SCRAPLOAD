@@ -48,19 +48,18 @@ def download(content_links):
         web_ext = f_extns[1]
         website = f"{web_name}.{web_ext}".replace(f_name, "")
         try:
-            print(f"[+] Website: {website}\n[+] Downloading: {link}\n")
+            print(f"[+] Downloading: {link}\n[+] Website: {website}\n[+] Filename: {f_name}\n[+] Type: {f_extn}\n[+] Size: {filesize(link)}\n")
             response = requests.get(link)
             mkdir(website)
             f_path = f"{website}/{f_name}.{f_extn}"
             open(f"{f_path}", "wb").write(response.content)
-            f_size = filesize(f_path)
-            print(f"[+] Filename: {f_name}\n[+] Type: {f_extn}\n[+] Size: {f_size}\n")
+            # print(f"[+] Filename: {f_name}\n[+] Type: {f_extn}\n[+] Size: {f_size}\n")
         except requests.exceptions.HTTPError as e:
             return print(f"Error downloading {f_name}.{f_extn}", e)
         
 
-def filesize(path):
-    size = os.path.getsize(path)
+def filesize(link):
+    size = int(requests.get(link).headers.get('content-length'))
     return convert_size(size)
 
 
