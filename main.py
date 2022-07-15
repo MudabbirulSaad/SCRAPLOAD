@@ -16,11 +16,41 @@ from bs4 import BeautifulSoup as bs
 from urllib.parse import urlparse
 from tqdm.auto import tqdm
 
+
+def logo():
+    text = f'''
+
+ $$$$$$\   $$$$$$\  $$$$$$$\   $$$$$$\  $$$$$$$\  $$\       $$$$$$\   $$$$$$\  $$$$$$$\  
+$$  __$$\ $$  __$$\ $$  __$$\ $$  __$$\ $$  __$$\ $$ |     $$  __$$\ $$  __$$\ $$  __$$\ 
+$$ /  \__|$$ /  \__|$$ |  $$ |$$ /  $$ |$$ |  $$ |$$ |     $$ /  $$ |$$ /  $$ |$$ |  $$ |
+\$$$$$$\  $$ |      $$$$$$$  |$$$$$$$$ |$$$$$$$  |$$ |     $$ |  $$ |$$$$$$$$ |$$ |  $$ |
+ \____$$\ $$ |      $$  __$$< $$  __$$ |$$  ____/ $$ |     $$ |  $$ |$$  __$$ |$$ |  $$ |
+$$\   $$ |$$ |  $$\ $$ |  $$ |$$ |  $$ |$$ |      $$ |     $$ |  $$ |$$ |  $$ |$$ |  $$ |
+\$$$$$$  |\$$$$$$  |$$ |  $$ |$$ |  $$ |$$ |      $$$$$$$$\ $$$$$$  |$$ |  $$ |$$$$$$$  |
+ \______/  \______/ \__|  \__|\__|  \__|\__|      \________|\______/ \__|  \__|\_______/ 
+                                                                                         
+                                                                       -{version()}                                       
+                                                                                         
+    '''
+    return print(text)
+
+
+def version():
+    version = "v1"
+    resp = requests.get('https://raw.githubusercontent.com/MudabbirulSaad/SCRAPLOAD/master/version.txt')
+    remote_version = resp.text
+    if remote_version == version:
+        return version
+    else:
+        return f"{version} (updates available) ==> {remote_version}"
+
+
 def mkdir(path):
     if not os.path.exists(path):
             os.makedirs(path)
     else:
         pass
+
 
 def extract_url(list_urls, file_type):
     content_links = []
@@ -39,6 +69,7 @@ def extract_url(list_urls, file_type):
 
                 
     return download(content_links)
+
 
 def download(content_links):
     for link in content_links:
@@ -60,8 +91,8 @@ def download(content_links):
                         shutil.copyfileobj(raw, output)
             print("\n")
         except Exception as e:
-            return print(f"Error downloading {f_name}.{f_extn}", e)
-        
+            return print(f"Error downloading {f_name}.{f_extn}", e)     
+
 
 def filesize(link):
     size = int(requests.get(link).headers.get('content-length'))
@@ -77,7 +108,9 @@ def convert_size(size_bytes):
    s = round(size_bytes / p, 2)
    return "%s %s" % (s, size_name[i])
 
+
 def main():
+    logo()
     input_urls = input("Enter the list of URLs (separated by space) (canbe single URL): ")
     extn = input("Enter the extension name of the file (empty for all avaiable extensions): ")
     list_urls = []
