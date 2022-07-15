@@ -10,9 +10,11 @@
 
 import math
 import os
+import shutil
 import requests
 from bs4 import BeautifulSoup as bs
 from urllib.parse import urlparse
+from tqdm.auto import tqdm
 
 def mkdir(path):
     if not os.path.exists(path):
@@ -47,20 +49,23 @@ def download(content_links):
         web_name = f_extns[0].replace("https://", "").replace("http://", "")
         web_ext = f_extns[1]
         website = f"{web_name}.{web_ext}".replace(f_name, "")
+        f_path = f"{website}/{f_name}.{f_extn}"
         try:
-            print(f"[+] Downloading: {link}\n[+] Website: {website}\n[+] Filename: {f_name}\n[+] Type: {f_extn}\n[+] Size: {filesize(link)}\n")
-            response = requests.get(link)
-            mkdir(website)
-            f_path = f"{website}/{f_name}.{f_extn}"
-            open(f"{f_path}", "wb").write(response.content)
-            # print(f"[+] Filename: {f_name}\n[+] Type: {f_extn}\n[+] Size: {f_size}\n")
-        except requests.exceptions.HTTPError as e:
+            with requests.get(link, stream=True) as r:
+                total_length = filesize(link)
+                print(f"[+] Downloading: {link}\n[+] Website: {website}\n[+] Filename: {f_name}\n[+] Type: {f_extn}\n[+] Size: {convert_size(filesize(link))}")
+                with tqdm.wrapattr(r.raw, "read", total=total_length, desc="[+] Progress:", bar_format="{desc:<11}{percentage:6.0f}%|{bar:40}{r_bar}")as raw:
+                    mkdir(website)
+                    with open(f"{f_path}", "wb")as output:
+                        shutil.copyfileobj(raw, output)
+            print("\n")
+        except Exception as e:
             return print(f"Error downloading {f_name}.{f_extn}", e)
         
 
 def filesize(link):
     size = int(requests.get(link).headers.get('content-length'))
-    return convert_size(size)
+    return size
 
 
 def convert_size(size_bytes):
