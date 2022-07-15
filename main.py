@@ -36,7 +36,8 @@ $$\   $$ |$$ |  $$\ $$ |  $$ |$$ |  $$ |$$ |      $$ |     $$ |  $$ |$$ |  $$ |$
 
 
 def version():
-    version = "v1"
+    with open("version.txt", "r") as ver_file:
+        version = ver_file.read()
     resp = requests.get('https://raw.githubusercontent.com/MudabbirulSaad/SCRAPLOAD/master/version.txt')
     remote_version = resp.text
     if remote_version == version:
